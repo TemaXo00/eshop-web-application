@@ -6,3 +6,236 @@ datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
 }
+
+model User {
+  id Int @id @default(autoincrement())
+
+  first_name    String  @db.VarChar(30)
+  last_name     String? @db.VarChar(30)
+  password_hash String
+
+  username   String  @unique @db.VarChar(30)
+  avatar_url String?
+
+  phone String? @unique @db.VarChar(20)
+  email String  @unique @db.VarChar(60)
+
+  role   Roles  @default(USER)
+  status Status @default(ACTIVE)
+
+  store_id  Int?
+  store     Store?         @relation(fields: [store_id], references: [id])
+  position  StorePosition?
+  purchases Sale[]         @relation("CustomerSales")
+  sales     Sale[]         @relation("SellerSales")
+  reviews   Review[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("users")
+  @@index([store_id])
+  @@index([role])
+  @@index([email])
+}
+
+model Store {
+  id Int @id @default(autoincrement())
+
+  name        String  @db.VarChar(50)
+  address     String  @unique @db.VarChar(70)
+  email       String  @unique @db.VarChar(60)
+  store_image String?
+
+  users User[]
+  sales Sale[]
+  stock Stock[]
+
+  opening_time DateTime @db.Time()
+  closing_time DateTime @db.Time()
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("stores")
+  @@index([address])
+  @@index([email])
+}
+
+model Supplier {
+  id Int @id @default(autoincrement())
+
+  name     String  @db.VarChar(50)
+  phone    String  @unique @db.VarChar(20)
+  email    String  @unique @db.VarChar(60)
+  rating   Decimal @db.Decimal(2, 1)
+  logo_url String?
+
+  products Product[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("suppliers")
+  @@index([rating])
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+
+  name        String  @db.VarChar(50)
+  description String?
+  image_url   String?
+
+  products Product[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+
+  name        String    @db.VarChar(50)
+  description String?
+  price       Int
+  rating      Decimal   @db.Decimal(2, 1)
+  images      String[]?
+
+  categories Category[]
+  suppliers  Supplier[]
+  sale_items SaleItem[]
+  reviews    Review[]
+  stock      Stock[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("products")
+  @@index([rating])
+  @@index([created_at])
+  @@index([price])
+}
+
+model Stock {
+  id Int @id @default(autoincrement())
+
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id Int
+  store      Store   @relation(fields: [store_id], references: [id])
+  store_id   Int
+
+  quantity          Int @default(0)
+  reserved_quantity Int @default(0)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([product_id, store_id])
+  @@index([product_id])
+  @@index([store_id])
+  @@map("stock")
+}
+
+model Sale {
+  id Int @id @default(autoincrement())
+
+  customer    User  @relation("CustomerSales", fields: [customer_id], references: [id])
+  customer_id Int
+  seller      User  @relation("SellerSales", fields: [seller_id], references: [id])
+  seller_id   Int
+  store       Store @relation(fields: [store_id], references: [id])
+  store_id    Int
+
+  total_amount   Decimal        @db.Decimal(10, 2)
+  payment_method PaymentMethods
+  payment_status PaymentStatus  @default(OK)
+
+  sale_items SaleItem[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("sales")
+  @@index([customer_id])
+  @@index([seller_id])
+  @@index([store_id])
+  @@index([created_at])
+  @@index([total_amount])
+}
+
+model SaleItem {
+  id Int @id @default(autoincrement())
+
+  sale       Sale    @relation(fields: [sale_id], references: [id])
+  sale_id    Int
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id Int
+
+  quantity      Int
+  price_at_sale Decimal @db.Decimal(10, 2)
+
+  @@map("sale_items")
+  @@unique([sale_id, product_id])
+  @@index([sale_id])
+  @@index([product_id])
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+
+  title       String    @db.VarChar(70)
+  description String?
+  liked       String?
+  disliked    String?
+  images      String[]?
+
+  user_id    Int
+  user       User    @relation(fields: [user_id], references: [id])
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id])
+
+  rating Decimal @db.Decimal(2, 1)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([user_id, product_id])
+  @@index([product_id])
+  @@index([rating])
+  @@index([created_at])
+  @@map("reviews")
+}
+
+enum Roles {
+  USER
+  EMPLOYEE
+  ADMIN
+}
+
+enum Status {
+  ACTIVE
+  BANNED
+  HIRED
+}
+
+enum StorePosition {
+  SELLER
+  MANAGER
+  ADMINISTRATOR
+  DIRECTOR
+  CONSULTANT
+}
+
+enum PaymentMethods {
+  CARD
+  CASH
+}
+
+enum PaymentStatus {
+  OK
+  DECLINED
+  REFUND
+}
