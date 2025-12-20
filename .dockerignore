@@ -1,0 +1,9 @@
+.git
+.gitignore
+.idea
+node_modules
+npm-debug.log
+.env
+docker-files/
+README.md
+*.md
