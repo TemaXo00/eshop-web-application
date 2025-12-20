@@ -98,11 +98,11 @@ model Category {
 model Product {
   id Int @id @default(autoincrement())
 
-  name        String    @db.VarChar(50)
+  name        String   @db.VarChar(50)
   description String?
   price       Int
-  rating      Decimal   @db.Decimal(2, 1)
-  images      String[]?
+  rating      Decimal  @db.Decimal(2, 1)
+  images      String[]
 
   categories Category[]
   suppliers  Supplier[]
@@ -186,11 +186,11 @@ model SaleItem {
 model Review {
   id Int @id @default(autoincrement())
 
-  title       String    @db.VarChar(70)
+  title       String   @db.VarChar(70)
   description String?
   liked       String?
   disliked    String?
-  images      String[]?
+  images      String[]
 
   user_id    Int
   user       User    @relation(fields: [user_id], references: [id])

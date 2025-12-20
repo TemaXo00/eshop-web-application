@@ -11,4 +11,4 @@ RUN npx prisma generate
 COPY . .
 
 EXPOSE 3000
-CMD sh -c "npx prisma db push --accept-data-loss && npm run start:dev"
+CMD sh -c "npx prisma migrate deploy && npm run start:dev"
