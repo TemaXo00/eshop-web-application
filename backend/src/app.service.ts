@@ -1,5 +1,5 @@
-import {BadRequestException, Injectable, InternalServerErrorException} from '@nestjs/common';
-import {PrismaService} from "./prisma/prisma.service";
+import {Injectable, InternalServerErrorException} from '@nestjs/common';
+import { PrismaService } from "./prisma/prisma.service";
 
 @Injectable()
 export class AppService {
@@ -15,9 +15,11 @@ export class AppService {
 
   async health() {
     try {
-      await this.prisma.$queryRaw`SELECT 1`;
+      await this.prisma.$queryRaw`SELECT 1`
       return {
         status: "OK",
+        timestamp: new Date().toISOString(),
+        database: "connected"
       }
     }
     catch (e) {
