@@ -71,15 +71,14 @@ export class RegisterDto {
   @ApiProperty({
     description: 'User phone number. Validate by regular expression',
     example: '+375291234567',
-    required: false,
     minLength: 10,
     maxLength: 20,
   })
   @IsNotEmpty()
+  @IsString()
   @Matches(/^\+?\d{10,19}$/, {
     message: 'Phone must contain only digits with optional + prefix',
   })
-  @IsString()
   phone: string;
   @ApiProperty({
     description: "User's email",
@@ -88,8 +87,8 @@ export class RegisterDto {
     maxLength: 60,
   })
   @IsNotEmpty()
-  @IsEmail()
   @IsString()
+  @IsEmail()
   @Length(3, 60)
   email: string;
 }
