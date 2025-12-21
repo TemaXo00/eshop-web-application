@@ -15,11 +15,11 @@ model User {
   last_name     String? @db.VarChar(30)
   password_hash String
 
-  username   String  @unique @db.VarChar(30)
+  username   String? @unique @db.VarChar(50)
   avatar_url String?
 
-  phone String? @unique @db.VarChar(20)
-  email String  @unique @db.VarChar(60)
+  phone String @unique @db.VarChar(20)
+  email String @unique @db.VarChar(60)
 
   role   Roles  @default(USER)
   status Status @default(ACTIVE)
