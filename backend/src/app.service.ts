@@ -5,7 +5,7 @@ import { PrismaService } from "./prisma/prisma.service";
 export class AppService {
   constructor( private readonly prisma: PrismaService) {}
 
-  getHello() {
+  greeting() {
     return {
       greeting: "Welcome to EShop API",
       status: "OK",
@@ -13,7 +13,7 @@ export class AppService {
     };
   }
 
-  async health() {
+  async Dbhealth() {
     try {
       await this.prisma.$queryRaw`SELECT 1`
       return {

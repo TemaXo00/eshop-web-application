@@ -8,28 +8,30 @@ export class AppController {
 
   @ApiOperation({
     summary: "Greeting",
-    description: 'Greeting and docs redirect',
+    description: 'Greeting and docs link',
   })
   @ApiOkResponse({
     description: 'Return Success and link to docs',
   })
   @Get()
-  getHello() {
-    return this.appService.getHello();
+  greeting() {
+    return this.appService.greeting();
   }
 
   @ApiOperation({
     summary: "DB Health",
-    description: 'Check DB and Prisma database',
+    description: 'Check DB and Prisma health',
   })
   @ApiOkResponse({
     description: "Return Success",
     example: {
       status: "OK",
+      timestamp: new Date().toISOString(),
+      database: "connected"
     }
   })
   @ApiInternalServerErrorResponse({
-    description: "Return Error if not connect to DB",
+    description: "Return error if not connect to DB or Prisma error",
     example: {
       status: "ERROR",
       timestamp: new Date().toISOString(),
@@ -37,8 +39,8 @@ export class AppController {
       message: "Error message",
     }
   })
-  @Get('health')
+  @Get('db-health')
   getDBHealth() {
-    return this.appService.health();
+    return this.appService.Dbhealth();
   }
 }
