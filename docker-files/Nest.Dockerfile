@@ -1,6 +1,6 @@
 FROM node:25-alpine
 
-WORKDIR /app
+WORKDIR /app/backend
 
 ARG BACKEND_PATH
 
@@ -12,5 +12,5 @@ RUN npx prisma generate
 
 COPY ${BACKEND_PATH}/ .
 
-EXPOSE 3000
+EXPOSE 5173
 CMD sh -c "npx prisma db push && npm run start:dev"

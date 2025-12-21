@@ -25,12 +25,29 @@ services:
       - "${BACKEND_PORT}:3000"
     environment:
       - DB_URL=${DB_URL}
+      - BACKEND_ALLOWED_ORIGINS=${BACKEND_ALLOWED_ORIGINS}
     volumes:
-      - ./backend:/app
-      - ./backend/node_modules:/app/node_modules
+      - ./backend:/app/backend
+      - ./backend/node_modules:/app/backend/node_modules
     depends_on:
       postgres_db:
         condition: service_healthy
+
+  vue_ui:
+    build:
+      context: .
+      dockerfile: docker-files/Vue.Dockerfile
+      args:
+        UI_PATH: ${UI_PATH}
+    ports:
+      - "${UI_PORT}:5173"
+    environment:
+      - VITE_APP_API_URL=${VITE_APP_API_URL}
+    volumes:
+      - ./ui:/app/ui
+      - ./ui/node_modules:/app/ui/node_modules
+    depends_on:
+      - nest_backend
 
 volumes:
   db_data:
