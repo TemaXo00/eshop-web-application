@@ -1,10 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider     = "prisma-client"
+  output       = "../src/prisma/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DB_URL")
 }
 
 model User {
@@ -33,10 +34,10 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@map("users")
   @@index([store_id])
   @@index([role])
   @@index([email])
+  @@map("users")
 }
 
 model Store {
@@ -57,9 +58,9 @@ model Store {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@map("stores")
   @@index([address])
   @@index([email])
+  @@map("stores")
 }
 
 model Supplier {
@@ -76,8 +77,8 @@ model Supplier {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@map("suppliers")
   @@index([rating])
+  @@map("suppliers")
 }
 
 model Category {
@@ -113,10 +114,10 @@ model Product {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@map("products")
   @@index([rating])
   @@index([created_at])
   @@index([price])
+  @@map("products")
 }
 
 model Stock {
@@ -158,12 +159,12 @@ model Sale {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@map("sales")
   @@index([customer_id])
   @@index([seller_id])
   @@index([store_id])
   @@index([created_at])
   @@index([total_amount])
+  @@map("sales")
 }
 
 model SaleItem {
@@ -177,10 +178,10 @@ model SaleItem {
   quantity      Int
   price_at_sale Decimal @db.Decimal(10, 2)
 
-  @@map("sale_items")
   @@unique([sale_id, product_id])
   @@index([sale_id])
   @@index([product_id])
+  @@map("sale_items")
 }
 
 model Review {
@@ -218,7 +219,6 @@ enum Roles {
 enum Status {
   ACTIVE
   BANNED
-  HIRED
 }
 
 enum StorePosition {

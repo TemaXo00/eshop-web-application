@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres_db:
     image: postgres:18.1-alpine
     environment:
       - POSTGRES_DB=${DB_NAME}
@@ -15,17 +15,21 @@ services:
       timeout: 5s
       retries: 5
 
-  backend_nest:
+  nest_backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: nest_backend
+      context: .
+      dockerfile: docker-files/Nest.Dockerfile
+      args:
+        BACKEND_PATH: ${BACKEND_PATH}
     ports:
       - "${BACKEND_PORT}:3000"
     environment:
       - DB_URL=${DB_URL}
+    volumes:
+      - ./backend:/app
+      - ./backend/node_modules:/app/node_modules
     depends_on:
-      db:
+      postgres_db:
         condition: service_healthy
 
 volumes:
