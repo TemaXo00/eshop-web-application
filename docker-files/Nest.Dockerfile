@@ -13,4 +13,4 @@ RUN npx prisma generate
 COPY ${BACKEND_PATH}/ .
 
 EXPOSE 5173
-CMD sh -c "npx prisma db push && npm run start:dev"
+CMD sh -c "npx prisma migrate deploy && npm run start:dev"

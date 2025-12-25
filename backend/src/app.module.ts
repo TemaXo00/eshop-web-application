@@ -4,6 +4,14 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from './auth/auth.module';
+import { StoreModule } from './store/store.module';
+import { SupplierModule } from './supplier/supplier.module';
+import { CategoryModule } from './category/category.module';
+import { ProductModule } from './product/product.module';
+import { StockModule } from './stock/stock.module';
+import { SaleModule } from './sale/sale.module';
+import { ReviewModule } from './review/review.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -11,7 +19,15 @@ import { AuthModule } from './auth/auth.module';
         isGlobal: true,
       }),
       PrismaModule,
-      AuthModule
+      AuthModule,
+      StoreModule,
+      SupplierModule,
+      CategoryModule,
+      ProductModule,
+      StockModule,
+      SaleModule,
+      ReviewModule,
+      UserModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,4 @@
-import {Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, HttpCode, Post, Req, Res} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import {
@@ -11,10 +11,10 @@ import {
 import {LoginDto} from "./dto/login.dto";
 import type { Request, Response } from 'express';
 import {AuthDto} from "./dto/auth.dto";
-import {AuthGuard} from "@nestjs/passport";
 import {Authorization} from "../common/decorators/authorization.decorator";
 import {Authorized} from "../common/decorators/authorized.decorator";
-import * as client from "../prisma/generated/prisma/client";
+import * as client from "../../prisma/generated/prisma/client";
+import {UserDto} from "./dto/user.dto";
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -31,28 +31,10 @@ export class AuthController {
     type: AuthDto
   })
   @ApiConflictResponse({
-    description: 'One or many fields exists',
-    example: {
-      message: 'User with this email already exists',
-      error: 'Conflict',
-      statusCode: 409,
-    },
+    description: 'User with this email already exists',
   })
   @ApiBadRequestResponse({
-    description: "Error registering user. One or many fields doesn't correct",
-    example: {
-      message: [
-        'phone must be a string',
-        'Phone must contain only digits with optional + prefix',
-        'phone should not be empty',
-        'email must be longer than or equal to 3 characters',
-        'email must be a string',
-        'email must be an email',
-        'email should not be empty',
-      ],
-      error: 'Bad Request',
-      statusCode: 400,
-    },
+    description: "One or many fields doesn't correct",
   })
   @Post('register')
   @HttpCode(201)
@@ -69,22 +51,10 @@ export class AuthController {
     type: AuthDto,
   })
   @ApiNotFoundResponse({
-    description: 'Login not found',
-    example: {
-      "message": "User not found",
-      "error": "Not found",
-      "statusCode": 404
-    }
+    description: 'User not found',
   })
   @ApiBadRequestResponse({
     description: 'Login data is not correct',
-    example: {
-      "message": [
-        "email must be an email"
-      ],
-      "error": "Bad Request",
-      "statusCode": 400
-    }
   })
   @Post('login')
   @HttpCode(200)
@@ -102,19 +72,9 @@ export class AuthController {
   })
   @ApiNotFoundResponse({
     description: 'User not found',
-    example: {
-      "message": "User not found",
-      "error": "Not found",
-      "statusCode": 404
-    }
   })
   @ApiUnauthorizedResponse({
-    description: 'Refresh token not found',
-    example: {
-      message: 'Could not found refresh token',
-      error: 'Unauthorized',
-      statusCode: 401,
-    }
+    description: 'Could not found refresh token',
   })
   @Post('refresh')
   @HttpCode(200)
@@ -136,36 +96,21 @@ export class AuthController {
   }
 
   @ApiOperation({
-    summary: 'Get current user profile',
+    summary: 'Get current user',
     description: 'Returns profile information of the authenticated user',
   })
   @ApiBearerAuth('JWT-auth')
   @ApiOkResponse({
-    description: 'Show user profile',
-    example: {
-      id: 1,
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'john.doe@example.com',
-      phone: '+1234567890',
-      username: 'johndoe',
-      avatar_url: 'https://example.com/avatar.jpg',
-      role: 'USER',
-      created_at: '2024-01-01T00:00:00.000Z',
-      updated_at: '2024-01-01T00:00:00.000Z',
-    }
+    description: 'Show user',
+    type: UserDto
   })
   @ApiUnauthorizedResponse({
-    description: 'User unauthorized',
-    example: {
-      message: 'Unauthorized',
-      statusCode: 401,
-    }
+    description: 'Unauthorized',
   })
   @Authorization()
   @Get('profile')
   @HttpCode(200)
-  async myProfile(@Authorized() user: client.User) {
+  async user(@Authorized() user: client.User) {
     return user;
   }
 }
