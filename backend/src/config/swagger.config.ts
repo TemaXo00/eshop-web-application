@@ -3,6 +3,17 @@ import {DocumentBuilder, SwaggerCustomOptions} from "@nestjs/swagger";
 export const swaggerConfig = new DocumentBuilder()
     .setTitle('ESHop API')
     .setVersion('1.0.0')
+    .addBearerAuth( // ⬅️ ЭТО ГЛАВНОЕ!
+        {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+            name: 'JWT',
+            description: 'Enter JWT token',
+            in: 'header',
+        },
+        'JWT-auth',
+    )
     .setDescription('ESHop API for MITSO Laboratories')
     .setContact('TemaXo00', 'https://github.com/TemaXo00/', 'melnikov.artem294@gmail.com')
     .build();

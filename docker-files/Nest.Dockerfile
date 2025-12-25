@@ -1,6 +1,6 @@
 FROM node:25-alpine
 
-WORKDIR /app/backend
+WORKDIR /app
 
 ARG BACKEND_PATH
 

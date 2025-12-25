@@ -1,6 +1,6 @@
 FROM node:25-alpine
 
-WORKDIR /app/ui
+WORKDIR /app
 
 ARG UI_PATH
 
