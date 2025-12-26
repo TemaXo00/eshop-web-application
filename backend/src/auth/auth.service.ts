@@ -105,11 +105,16 @@ export class AuthService {
 
       const user = await this.prisma.user.findUnique({
         where: { id: payload.id },
-        select: { id: true, role: true },
+        select: { id: true, role: true, status: true },
       });
 
       if (!user) {
         throw new NotFoundException("User not found");
+      }
+
+      if (user.status==='BANNED') {
+        this.setCookies(res, '', new Date(0));
+        throw new UnauthorizedException("User banned");
       }
 
       return this.auth(res, user.id, user.role);

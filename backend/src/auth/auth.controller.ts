@@ -2,7 +2,7 @@ import {Body, Controller, Get, HttpCode, Post, Req, Res} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import {
-  ApiBadRequestResponse, ApiBearerAuth,
+  ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse,
   ApiOperation,
@@ -15,7 +15,7 @@ import {Authorization} from "../common/decorators/authorization.decorator";
 import {Authorized} from "../common/decorators/authorized.decorator";
 import * as client from "../../prisma/generated/prisma/client";
 import {UserDto} from "./dto/user.dto";
-import {JwtAuth} from "../common/decorators/jwt-auth.decorator";
+import {JwtSwagger} from "../common/decorators/jwt-swagger.decorator";
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -78,9 +78,9 @@ export class AuthController {
     description: 'User not found',
   })
   @ApiUnauthorizedResponse({
-    description: 'Could not found refresh token',
+    description: 'Could not found refresh token or user banned',
   })
-  @JwtAuth()
+  @JwtSwagger()
   @Post('refresh')
   @HttpCode(200)
   async refresh(@Req() req: Request, @Res({passthrough: true}) res: Response) {
@@ -94,7 +94,7 @@ export class AuthController {
   @ApiNoContentResponse({
     description: 'Logout successfully',
   })
-  @JwtAuth()
+  @JwtSwagger()
   @Post('logout')
   @HttpCode(204)
   async logout(@Res({passthrough: true}) res: Response) {
@@ -105,7 +105,6 @@ export class AuthController {
     summary: 'Get current user',
     description: 'Returns profile information of the authenticated user',
   })
-  @JwtAuth()
   @ApiOkResponse({
     description: 'Show user',
     type: UserDto
@@ -113,6 +112,7 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Unauthorized',
   })
+  @JwtSwagger()
   @Authorization()
   @Get('profile')
   @HttpCode(200)
