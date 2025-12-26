@@ -8,7 +8,6 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -27,32 +26,71 @@ import {
   PaginationDto,
 } from '../common/dto/pagination.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { Authorization } from '../common/decorators/authorization.decorator';
 import { Authorized } from '../common/decorators/authorized.decorator';
 import * as client from '../../prisma/generated/prisma/client';
-import { Roles as UserRoles } from '../../prisma/generated/prisma/enums';
-import { Roles } from '../common/decorators/roles.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
 import { JwtSwagger } from '../common/decorators/jwt-swagger.decorator';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryResponseDto } from './dto/category-response.dto';
+import { AdminOnly } from '../common/decorators/admin-only.decorator';
 
 @ApiTags('Categories')
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @ApiOperation({ summary: 'Get paginated categories' })
+  @ApiOperation({ summary: 'Get paginated categories with optional search' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: 'Search by name or description',
+  })
   @ApiOkResponse({
     description: 'Returns paginated categories',
     type: PaginatedResponseDto,
   })
-  @ApiBadRequestResponse({ description: 'Bad request (ex. page=0' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
   @Get()
-  async findAll(@Query() paginationDto: PaginationDto) {
-    return await this.categoryService.findAllPaginated(paginationDto);
+  async findAll(
+    @Query() paginationDto: PaginationDto,
+    @Query('search') search?: string,
+  ) {
+    return await this.categoryService.findAllPaginated(paginationDto, search);
+  }
+
+  @ApiOperation({ summary: 'Search categories by query' })
+  @ApiQuery({
+    name: 'q',
+    required: true,
+    type: String,
+    description: 'Search query (min 2 chars)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Limit results (default: 10)',
+  })
+  @ApiOkResponse({
+    description: 'Returns search results',
+    schema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string' },
+        results: { type: 'array' },
+        total: { type: 'number' },
+      },
+    },
+  })
+  @ApiBadRequestResponse({ description: 'Query too short' })
+  @Get('search')
+  async search(
+    @Query('q') query: string,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+  ) {
+    return await this.categoryService.searchCategories(query, limit);
   }
 
   @ApiOperation({ summary: 'Get category by id' })
@@ -78,9 +116,7 @@ export class CategoryController {
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
   @ApiConflictResponse({ description: 'Category already exists' })
   @JwtSwagger()
-  @UseGuards(RolesGuard)
-  @Authorization()
-  @Roles(UserRoles.ADMIN)
+  @AdminOnly()
   @Post()
   async create(
     @Authorized() user: client.User,
@@ -96,9 +132,7 @@ export class CategoryController {
   @ApiUnauthorizedResponse({ description: 'User unauthorized' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
   @JwtSwagger()
-  @UseGuards(RolesGuard)
-  @Authorization()
-  @Roles(UserRoles.ADMIN)
+  @AdminOnly()
   @Put(':id')
   async update(
     @Authorized() user: client.User,
@@ -114,9 +148,7 @@ export class CategoryController {
   @ApiUnauthorizedResponse({ description: 'User unauthorized' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
   @JwtSwagger()
-  @UseGuards(RolesGuard)
-  @Authorization()
-  @Roles(UserRoles.ADMIN)
+  @AdminOnly()
   @Delete(':id')
   async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.categoryService.delete(id);
