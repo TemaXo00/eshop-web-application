@@ -15,6 +15,7 @@ import {Authorization} from "../common/decorators/authorization.decorator";
 import {Authorized} from "../common/decorators/authorized.decorator";
 import * as client from "../../prisma/generated/prisma/client";
 import {UserDto} from "./dto/user.dto";
+import {JwtAuth} from "../common/decorators/jwt-auth.decorator";
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -56,6 +57,9 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: 'Login data is not correct',
   })
+  @ApiUnauthorizedResponse({
+    description: 'User banned',
+  })
   @Post('login')
   @HttpCode(200)
   login(@Res({passthrough: true}) res: Response, @Body() dto: LoginDto) {
@@ -76,6 +80,7 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Could not found refresh token',
   })
+  @JwtAuth()
   @Post('refresh')
   @HttpCode(200)
   async refresh(@Req() req: Request, @Res({passthrough: true}) res: Response) {
@@ -89,6 +94,7 @@ export class AuthController {
   @ApiNoContentResponse({
     description: 'Logout successfully',
   })
+  @JwtAuth()
   @Post('logout')
   @HttpCode(204)
   async logout(@Res({passthrough: true}) res: Response) {
@@ -99,7 +105,7 @@ export class AuthController {
     summary: 'Get current user',
     description: 'Returns profile information of the authenticated user',
   })
-  @ApiBearerAuth('JWT-auth')
+  @JwtAuth()
   @ApiOkResponse({
     description: 'Show user',
     type: UserDto

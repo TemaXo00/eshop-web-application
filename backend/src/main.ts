@@ -4,8 +4,9 @@ import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule } from "@nestjs/swagger";
 import {swaggerConfig, swaggerUIconfig} from "./config/swagger.config";
 import {ConfigService} from "@nestjs/config";
-import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import cookieParser from "cookie-parser";
+import {LoggingInterceptor} from "./common/interceptors/logging.interceptor";
+import {ResponseInterceptor} from "./common/interceptors/response.interceptor";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -15,7 +16,11 @@ async function bootstrap() {
   });
   const config = app.get(ConfigService);
 
-  app.use(LoggerMiddleware)
+
+  app.useGlobalInterceptors(
+      new ResponseInterceptor(),
+      new LoggingInterceptor()
+  )
 
   app.use(cookieParser())
 

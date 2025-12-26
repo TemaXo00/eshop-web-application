@@ -67,26 +67,30 @@ export class AuthService {
       },
     });
 
-    return this.auth(res, user.id, user.role)
+    return this.auth(res, user.id, user.role);
   }
 
   async login(res: Response, dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
-      select: { id: true, password_hash: true, role: true },
-    })
+      select: { id: true, password_hash: true, role: true, status: true },
+    });
 
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
-    const IsValidPassword = await validatePassword(dto.password, user.password_hash)
+    if (user.status === 'BANNED') {
+      throw new UnauthorizedException("User banned");
+    }
+
+    const IsValidPassword = await validatePassword(dto.password, user.password_hash);
 
     if (!IsValidPassword) {
       throw new NotFoundException("User not found");
     }
 
-    return this.auth(res, user.id, user.role)
+    return this.auth(res, user.id, user.role);
   }
 
   async refresh(req: Request, res: Response) {
@@ -102,13 +106,13 @@ export class AuthService {
       const user = await this.prisma.user.findUnique({
         where: { id: payload.id },
         select: { id: true, role: true },
-      })
+      });
 
-      if(!user) {
+      if (!user) {
         throw new NotFoundException("User not found");
       }
 
-      return this.auth(res, user.id, user.role)
+      return this.auth(res, user.id, user.role);
     } catch (error) {
       if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
         throw new UnauthorizedException('Invalid or expired refresh token');
@@ -121,11 +125,9 @@ export class AuthService {
     this.setCookies(res, '', new Date(0));
   }
 
-  async validate(id: number, role: string) {
+  async validate(id: number) {
     const user = await this.prisma.user.findUnique({
-      where: {
-        id
-      },
+      where: { id },
       select: {
         id: true,
         first_name: true,
@@ -136,36 +138,40 @@ export class AuthService {
         phone: true,
         email: true,
       }
-    })
+    });
 
     if (!user) {
       throw new NotFoundException("User not found");
+    }
+
+    if (user.status === 'BANNED') {
+      throw new UnauthorizedException('User banned');
     }
 
     return user;
   }
 
   private genTokens(id: number, role: string) {
-    const payload: JwtPayload = { id, role }
+    const payload: JwtPayload = { id, role };
 
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: this.JWT_ACCESS_TOKEN_TTL as any
-    })
+    });
 
     const refreshToken = this.jwtService.sign(payload, {
       expiresIn: this.JWT_REFRESH_TOKEN_TTL as any
-    })
+    });
 
     return {
       accessToken,
       refreshToken,
-    }
+    };
   }
 
   private auth(res: Response, id: number, role: string) {
     const { accessToken, refreshToken } = this.genTokens(id, role);
 
-    const expiresIn: Date = this.dateUtil.parseTTL(this.JWT_REFRESH_TOKEN_TTL)
+    const expiresIn: Date = this.dateUtil.parseTTL(this.JWT_REFRESH_TOKEN_TTL);
 
     this.setCookies(res, refreshToken, expiresIn);
 

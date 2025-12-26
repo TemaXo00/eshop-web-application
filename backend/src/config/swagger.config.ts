@@ -3,7 +3,7 @@ import {DocumentBuilder, SwaggerCustomOptions} from "@nestjs/swagger";
 export const swaggerConfig = new DocumentBuilder()
     .setTitle('ESHop API')
     .setVersion('1.0.0')
-    .addBearerAuth( // ⬅️ ЭТО ГЛАВНОЕ!
+    .addBearerAuth(
         {
             type: 'http',
             scheme: 'bearer',
