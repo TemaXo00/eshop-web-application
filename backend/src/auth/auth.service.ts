@@ -1,14 +1,19 @@
-import {ConflictException, Injectable, NotFoundException, UnauthorizedException} from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
-import {hashPassword, validatePassword} from '../common/utils/password.utils';
-import {ConfigService} from "@nestjs/config";
-import {JwtService} from "@nestjs/jwt";
-import type {JwtPayload} from "./interfaces/jwt.interface";
-import {LoginDto} from "./dto/login.dto";
-import type {Request, Response} from 'express'
-import {isDev} from "../common/utils/is-dev.util";
-import {DateUtil} from "../common/utils/parse-data.util";
+import { hashPassword, validatePassword } from '../common/utils/password.utils';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import type { JwtPayload } from './interfaces/jwt.interface';
+import { LoginDto } from './dto/login.dto';
+import type { Request, Response } from 'express';
+import { isDev } from '../common/utils/is-dev.util';
+import { DateUtil } from '../common/utils/parse-data.util';
 
 @Injectable()
 export class AuthService {
@@ -17,13 +22,17 @@ export class AuthService {
   private readonly COOKIE_DOMAIN: string;
 
   constructor(
-      private readonly prisma: PrismaService,
-      private readonly config: ConfigService,
-      private readonly jwtService: JwtService,
-      private dateUtil: DateUtil
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+    private readonly jwtService: JwtService,
+    private dateUtil: DateUtil,
   ) {
-    this.JWT_ACCESS_TOKEN_TTL = config.getOrThrow<string>('JWT_ACCESS_TOKEN_TTL');
-    this.JWT_REFRESH_TOKEN_TTL = config.getOrThrow<string>('JWT_REFRESH_TOKEN_TTL');
+    this.JWT_ACCESS_TOKEN_TTL = config.getOrThrow<string>(
+      'JWT_ACCESS_TOKEN_TTL',
+    );
+    this.JWT_REFRESH_TOKEN_TTL = config.getOrThrow<string>(
+      'JWT_REFRESH_TOKEN_TTL',
+    );
     this.COOKIE_DOMAIN = config.getOrThrow<string>('COOKIE_DOMAIN');
   }
 
@@ -38,11 +47,11 @@ export class AuthService {
         select: { id: true },
       }),
       dto.username
-          ? this.prisma.user.findUnique({
+        ? this.prisma.user.findUnique({
             where: { username: dto.username },
             select: { id: true },
           })
-          : Promise.resolve(null),
+        : Promise.resolve(null),
     ]);
 
     if (existingEmail) {
@@ -77,17 +86,20 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
 
     if (user.status === 'BANNED') {
-      throw new UnauthorizedException("User banned");
+      throw new UnauthorizedException('User banned');
     }
 
-    const IsValidPassword = await validatePassword(dto.password, user.password_hash);
+    const IsValidPassword = await validatePassword(
+      dto.password,
+      user.password_hash,
+    );
 
     if (!IsValidPassword) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
 
     return this.auth(res, user.id, user.role);
@@ -101,7 +113,8 @@ export class AuthService {
     }
 
     try {
-      const payload: JwtPayload = await this.jwtService.verifyAsync(refreshToken);
+      const payload: JwtPayload =
+        await this.jwtService.verifyAsync(refreshToken);
 
       const user = await this.prisma.user.findUnique({
         where: { id: payload.id },
@@ -109,17 +122,20 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException("User not found");
+        throw new NotFoundException('User not found');
       }
 
-      if (user.status==='BANNED') {
+      if (user.status === 'BANNED') {
         this.setCookies(res, '', new Date(0));
-        throw new UnauthorizedException("User banned");
+        throw new UnauthorizedException('User banned');
       }
 
       return this.auth(res, user.id, user.role);
     } catch (error) {
-      if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+      if (
+        error.name === 'JsonWebTokenError' ||
+        error.name === 'TokenExpiredError'
+      ) {
         throw new UnauthorizedException('Invalid or expired refresh token');
       }
       throw error;
@@ -142,11 +158,11 @@ export class AuthService {
         status: true,
         phone: true,
         email: true,
-      }
+      },
     });
 
     if (!user) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
 
     if (user.status === 'BANNED') {
@@ -160,11 +176,11 @@ export class AuthService {
     const payload: JwtPayload = { id, role };
 
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: this.JWT_ACCESS_TOKEN_TTL as any
+      expiresIn: this.JWT_ACCESS_TOKEN_TTL as any,
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: this.JWT_REFRESH_TOKEN_TTL as any
+      expiresIn: this.JWT_REFRESH_TOKEN_TTL as any,
     });
 
     return {

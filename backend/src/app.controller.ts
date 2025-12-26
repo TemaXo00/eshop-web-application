@@ -1,13 +1,17 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import {ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation} from "@nestjs/swagger";
+import {
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @ApiOperation({
-    summary: "Greeting",
+    summary: 'Greeting',
     description: 'Greeting and docs link',
   })
   @ApiOkResponse({
@@ -19,25 +23,25 @@ export class AppController {
   }
 
   @ApiOperation({
-    summary: "DB Health",
+    summary: 'DB Health',
     description: 'Check DB and Prisma health',
   })
   @ApiOkResponse({
-    description: "Return Success",
+    description: 'Return Success',
     example: {
-      status: "OK",
+      status: 'OK',
       timestamp: new Date().toISOString(),
-      database: "connected"
-    }
+      database: 'connected',
+    },
   })
   @ApiInternalServerErrorResponse({
-    description: "Return error if not connect to DB or Prisma error",
+    description: 'Return error if not connect to DB or Prisma error',
     example: {
-      status: "ERROR",
+      status: 'ERROR',
       timestamp: new Date().toISOString(),
-      database: "disconnected",
-      message: "Error message",
-    }
+      database: 'disconnected',
+      message: 'Error message',
+    },
   })
   @Get('db-health')
   getDBHealth() {

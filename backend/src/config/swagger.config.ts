@@ -1,33 +1,37 @@
-import {DocumentBuilder, SwaggerCustomOptions} from "@nestjs/swagger";
+import { DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 
 export const swaggerConfig = new DocumentBuilder()
-    .setTitle('ESHop API')
-    .setVersion('1.0.0')
-    .addBearerAuth(
-        {
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT',
-            name: 'JWT',
-            description: 'Enter JWT token',
-            in: 'header',
-        },
-        'JWT-auth',
-    )
-    .setDescription('ESHop API for MITSO Laboratories')
-    .setContact('TemaXo00', 'https://github.com/TemaXo00/', 'melnikov.artem294@gmail.com')
-    .build();
+  .setTitle('ESHop API')
+  .setVersion('1.0.0')
+  .addBearerAuth(
+    {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'JWT',
+      description: 'Enter JWT token',
+      in: 'header',
+    },
+    'JWT-auth',
+  )
+  .setDescription('ESHop API for MITSO Laboratories')
+  .setContact(
+    'TemaXo00',
+    'https://github.com/TemaXo00/',
+    'melnikov.artem294@gmail.com',
+  )
+  .build();
 
 export const swaggerUIconfig: SwaggerCustomOptions = {
-    swaggerOptions: {
-        persistAuthorization: true,
-        docExpansion: "list",
-        filter: true,
-        displayRequestDuration: true,
-    },
-    customSiteTitle: 'ESHop API Documentation',
-    customCss: '.swagger-ui .topbar {display: none !important;}',
+  swaggerOptions: {
+    persistAuthorization: true,
+    docExpansion: 'list',
+    filter: true,
+    displayRequestDuration: true,
+  },
+  customSiteTitle: 'ESHop API Documentation',
+  customCss: '.swagger-ui .topbar {display: none !important;}',
 
-    jsonDocumentUrl: "docs/swagger.json",
-    yamlDocumentUrl: "docs/swagger.yaml",
-}
+  jsonDocumentUrl: 'docs/swagger.json',
+  yamlDocumentUrl: 'docs/swagger.yaml',
+};
