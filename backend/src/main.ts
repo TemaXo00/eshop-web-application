@@ -16,6 +16,10 @@ async function bootstrap() {
   });
   const config = app.get(ConfigService);
 
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+  }));
 
   app.useGlobalInterceptors(
       new ResponseInterceptor(),
@@ -23,8 +27,6 @@ async function bootstrap() {
   )
 
   app.use(cookieParser())
-
-  app.useGlobalPipes(new ValidationPipe());
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, swaggerDocument, swaggerUIconfig)

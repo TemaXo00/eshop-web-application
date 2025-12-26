@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Roles" AS ENUM ('USER', 'EMPLOYEE', 'ADMIN');
+CREATE TYPE "Roles" AS ENUM ('USER', 'EMPLOYEE', 'ADMIN', 'SUPPLIERMANAGER');
 
 -- CreateEnum
 CREATE TYPE "Status" AS ENUM ('ACTIVE', 'BANNED');
@@ -27,6 +27,7 @@ CREATE TABLE "users" (
     "status" "Status" NOT NULL DEFAULT 'ACTIVE',
     "store_id" INTEGER,
     "position" "StorePosition",
+    "supplier_id" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -56,6 +57,7 @@ CREATE TABLE "suppliers" (
     "email" VARCHAR(60) NOT NULL,
     "rating" DECIMAL(2,1) NOT NULL,
     "logo_url" TEXT,
+    "manager_id" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -104,7 +106,7 @@ CREATE TABLE "stock" (
 -- CreateTable
 CREATE TABLE "sales" (
     "id" SERIAL NOT NULL,
-    "customer_id" INTEGER NOT NULL,
+    "client_id" INTEGER NOT NULL,
     "seller_id" INTEGER NOT NULL,
     "store_id" INTEGER NOT NULL,
     "total_amount" DECIMAL(10,2) NOT NULL,
@@ -170,6 +172,9 @@ CREATE UNIQUE INDEX "users_phone_key" ON "users"("phone");
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_supplier_id_key" ON "users"("supplier_id");
+
+-- CreateIndex
 CREATE INDEX "users_store_id_idx" ON "users"("store_id");
 
 -- CreateIndex
@@ -191,13 +196,25 @@ CREATE INDEX "stores_address_idx" ON "stores"("address");
 CREATE INDEX "stores_email_idx" ON "stores"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "suppliers_name_key" ON "suppliers"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "suppliers_phone_key" ON "suppliers"("phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "suppliers_email_key" ON "suppliers"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "suppliers_manager_id_key" ON "suppliers"("manager_id");
+
+-- CreateIndex
 CREATE INDEX "suppliers_rating_idx" ON "suppliers"("rating");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "categories_name_key" ON "categories"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "products_name_key" ON "products"("name");
 
 -- CreateIndex
 CREATE INDEX "products_rating_idx" ON "products"("rating");
@@ -218,7 +235,7 @@ CREATE INDEX "stock_store_id_idx" ON "stock"("store_id");
 CREATE UNIQUE INDEX "stock_product_id_store_id_key" ON "stock"("product_id", "store_id");
 
 -- CreateIndex
-CREATE INDEX "sales_customer_id_idx" ON "sales"("customer_id");
+CREATE INDEX "sales_client_id_idx" ON "sales"("client_id");
 
 -- CreateIndex
 CREATE INDEX "sales_seller_id_idx" ON "sales"("seller_id");
@@ -263,13 +280,16 @@ CREATE INDEX "_ProductToSupplier_B_index" ON "_ProductToSupplier"("B");
 ALTER TABLE "users" ADD CONSTRAINT "users_store_id_fkey" FOREIGN KEY ("store_id") REFERENCES "stores"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "suppliers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "stock" ADD CONSTRAINT "stock_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "stock" ADD CONSTRAINT "stock_store_id_fkey" FOREIGN KEY ("store_id") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "sales" ADD CONSTRAINT "sales_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "sales" ADD CONSTRAINT "sales_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "sales" ADD CONSTRAINT "sales_seller_id_fkey" FOREIGN KEY ("seller_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

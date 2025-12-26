@@ -24,11 +24,14 @@ model User {
   role   Roles  @default(USER)
   status Status @default(ACTIVE)
 
-  store_id  Int?
-  store     Store?         @relation(fields: [store_id], references: [id])
-  position  StorePosition?
-  purchases Sale[]         @relation("CustomerSales")
-  sales     Sale[]         @relation("SellerSales")
+  store_id    Int?
+  store       Store?         @relation(fields: [store_id], references: [id])
+  position    StorePosition?
+  supplier_id Int?           @unique
+  supplier    Supplier?      @relation(fields: [supplier_id], references: [id])
+
+  purchases Sale[]   @relation("ClientSales")
+  sales     Sale[]   @relation("SellerSales")
   reviews   Review[]
 
   created_at DateTime @default(now())
@@ -48,7 +51,7 @@ model Store {
   email       String  @unique @db.VarChar(60)
   store_image String?
 
-  users User[]
+  staff User[]
   sales Sale[]
   stock Stock[]
 
@@ -66,13 +69,15 @@ model Store {
 model Supplier {
   id Int @id @default(autoincrement())
 
-  name     String  @db.VarChar(50)
+  name     String  @unique @db.VarChar(50)
   phone    String  @unique @db.VarChar(20)
   email    String  @unique @db.VarChar(60)
   rating   Decimal @db.Decimal(2, 1)
   logo_url String?
 
-  products Product[]
+  products   Product[]
+  manager    User?
+  manager_id Int?      @unique
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -84,7 +89,7 @@ model Supplier {
 model Category {
   id Int @id @default(autoincrement())
 
-  name        String  @db.VarChar(50)
+  name        String  @unique @db.VarChar(50)
   description String?
   image_url   String?
 
@@ -99,7 +104,7 @@ model Category {
 model Product {
   id Int @id @default(autoincrement())
 
-  name        String   @db.VarChar(50)
+  name        String   @unique @db.VarChar(50)
   description String?
   price       Int
   rating      Decimal  @db.Decimal(2, 1)
@@ -143,12 +148,12 @@ model Stock {
 model Sale {
   id Int @id @default(autoincrement())
 
-  customer    User  @relation("CustomerSales", fields: [customer_id], references: [id])
-  customer_id Int
-  seller      User  @relation("SellerSales", fields: [seller_id], references: [id])
-  seller_id   Int
-  store       Store @relation(fields: [store_id], references: [id])
-  store_id    Int
+  client    User  @relation("ClientSales", fields: [client_id], references: [id])
+  client_id Int
+  seller    User  @relation("SellerSales", fields: [seller_id], references: [id])
+  seller_id Int
+  store     Store @relation(fields: [store_id], references: [id])
+  store_id  Int
 
   total_amount   Decimal        @db.Decimal(10, 2)
   payment_method PaymentMethods
@@ -159,7 +164,7 @@ model Sale {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@index([customer_id])
+  @@index([client_id])
   @@index([seller_id])
   @@index([store_id])
   @@index([created_at])
@@ -214,6 +219,7 @@ enum Roles {
   USER
   EMPLOYEE
   ADMIN
+  SUPPLIERMANAGER
 }
 
 enum Status {
