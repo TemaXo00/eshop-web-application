@@ -1,16 +1,37 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { StoreService } from './store.service';
-import {PaginationDto} from "../common/dto/pagination.dto";
-import {ApiTags, ApiOperation, ApiQuery, ApiOkResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiConflictResponse} from "@nestjs/swagger";
-import {CreateStoreDto} from "./dto/create-store.dto";
-import {UpdateStoreDto} from "./dto/update-store.dto";
-import {StoreResponseDto} from "./dto/store-response.dto";
-import {PaginatedResponseDto} from "../common/dto/pagination.dto";
-import {Authorized} from "../common/decorators/authorized.decorator";
+import { PaginationDto } from '../common/dto/pagination.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiQuery,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiConflictResponse,
+} from '@nestjs/swagger';
+import { CreateStoreDto } from './dto/create-store.dto';
+import { UpdateStoreDto } from './dto/update-store.dto';
+import { StoreResponseDto } from './dto/store-response.dto';
+import { PaginatedResponseDto } from '../common/dto/pagination.dto';
+import { Authorized } from '../common/decorators/authorized.decorator';
 import * as client from '../../prisma/generated/prisma/client';
-import {Roles} from "../common/decorators/roles.decorator";
-import {Authorization} from "../common/decorators/authorization.decorator";
-import {RolesGuard} from "../common/guards/roles.guard";
+import { Roles } from '../common/decorators/roles.decorator';
+import { Authorization } from '../common/decorators/authorization.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles as UserRoles } from '../../prisma/generated/prisma/client';
 import { JwtSwagger } from '../common/decorators/jwt-swagger.decorator';
 
@@ -46,7 +67,7 @@ export class StoreController {
   @ApiNotFoundResponse({ description: 'Store not found' })
   @Get(':id')
   async getOne(@Param('id', ParseIntPipe) id: number) {
-    return await this.storeService.getStore(id)
+    return await this.storeService.getStore(id);
   }
 
   @ApiOperation({ summary: 'Create new store' })
@@ -76,16 +97,18 @@ export class StoreController {
   @ApiNotFoundResponse({ description: 'Store with id not found' })
   @ApiUnauthorizedResponse({ description: 'User unauthorized' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
-  @ApiConflictResponse({ description: 'Store with email or address already exists' })
+  @ApiConflictResponse({
+    description: 'Store with email or address already exists',
+  })
   @JwtSwagger()
   @UseGuards(RolesGuard)
   @Authorization()
   @Roles(UserRoles.ADMIN)
   @Put(':id')
   async update(
-      @Authorized() user: client.User,
-      @Param('id', ParseIntPipe) id: number,
-      @Body() dto: UpdateStoreDto,
+    @Authorized() user: client.User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateStoreDto,
   ) {
     return await this.storeService.updateStore(id, dto);
   }
@@ -101,9 +124,9 @@ export class StoreController {
   @Roles(UserRoles.ADMIN)
   @Delete(':id')
   async delete(
-      @Authorized() user: client.User,
-      @Param('id', ParseIntPipe) id: number
+    @Authorized() user: client.User,
+    @Param('id', ParseIntPipe) id: number,
   ) {
-    return await this.storeService.removeStore(id)
+    return await this.storeService.removeStore(id);
   }
 }

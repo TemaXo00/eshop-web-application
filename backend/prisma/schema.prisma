@@ -52,7 +52,6 @@ model Store {
 
   staff User[]
   sales Sale[]
-  stock Stock[]
 
   opening_time DateTime @db.Time()
   closing_time DateTime @db.Time()
@@ -113,7 +112,6 @@ model Product {
   suppliers  Supplier[]
   sale_items SaleItem[]
   reviews    Review[]
-  stock      Stock[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -122,26 +120,6 @@ model Product {
   @@index([created_at])
   @@index([price])
   @@map("products")
-}
-
-model Stock {
-  id Int @id @default(autoincrement())
-
-  product    Product @relation(fields: [product_id], references: [id])
-  product_id Int
-  store      Store   @relation(fields: [store_id], references: [id])
-  store_id   Int
-
-  quantity          Int @default(0)
-  reserved_quantity Int @default(0)
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@unique([product_id, store_id])
-  @@index([product_id])
-  @@index([store_id])
-  @@map("stock")
 }
 
 model Sale {

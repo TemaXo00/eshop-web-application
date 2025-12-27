@@ -8,7 +8,6 @@ import { StoreModule } from './store/store.module';
 import { SupplierModule } from './supplier/supplier.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
-import { StockModule } from './stock/stock.module';
 import { SaleModule } from './sale/sale.module';
 import { ReviewModule } from './review/review.module';
 import { UserModule } from './user/user.module';
@@ -26,7 +25,6 @@ import { EnumsModule } from './enums/enums.module';
     SupplierModule,
     CategoryModule,
     ProductModule,
-    StockModule,
     SaleModule,
     ReviewModule,
     UserModule,

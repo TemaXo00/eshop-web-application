@@ -14,8 +14,8 @@ import { hashPassword } from '../common/utils/password.utils';
 @Injectable()
 export class UserService {
   constructor(
-      private readonly prisma: PrismaService,
-      private readonly authService: AuthService,
+    private readonly prisma: PrismaService,
+    private readonly authService: AuthService,
   ) {}
 
   async getAllUsers(dto: PaginationDto, search?: string, role?: Roles) {
@@ -66,7 +66,7 @@ export class UserService {
 
   async getUserById(id: number) {
     const user = await this.prisma.user.findUnique({
-      where: { id, status: {not: Status.DELETED} },
+      where: { id, status: { not: Status.DELETED } },
       select: {
         id: true,
         first_name: true,

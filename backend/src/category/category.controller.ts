@@ -7,7 +7,8 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query, UseGuards,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -31,10 +32,10 @@ import * as client from '../../prisma/generated/prisma/client';
 import { JwtSwagger } from '../common/decorators/jwt-swagger.decorator';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryResponseDto } from './dto/category-response.dto';
-import {RolesGuard} from "../common/guards/roles.guard";
-import {Authorization} from "../common/decorators/authorization.decorator";
-import {Roles} from "../common/decorators/roles.decorator";
-import {Roles as UserRoles} from "../../prisma/generated/prisma/client";
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Authorization } from '../common/decorators/authorization.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Roles as UserRoles } from '../../prisma/generated/prisma/client';
 
 @ApiTags('Categories')
 @Controller('categories')

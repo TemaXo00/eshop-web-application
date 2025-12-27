@@ -4,7 +4,8 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Query, UseGuards,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import {
@@ -15,16 +16,17 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
-  ApiTags, ApiUnauthorizedResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import * as client from '../../prisma/generated/prisma/client';
 import { Authorized } from '../common/decorators/authorized.decorator';
 import { JwtSwagger } from '../common/decorators/jwt-swagger.decorator';
 import { StatisticsResponseDto } from './dto/statistics-response.dto';
-import {RolesGuard} from "../common/guards/roles.guard";
-import {Authorization} from "../common/decorators/authorization.decorator";
-import {Roles as UserRoles} from "../../prisma/generated/prisma/client";
-import {Roles} from "../common/decorators/roles.decorator";
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Authorization } from '../common/decorators/authorization.decorator';
+import { Roles as UserRoles } from '../../prisma/generated/prisma/client';
+import { Roles } from '../common/decorators/roles.decorator';
 
 @ApiTags('Admin panel')
 @JwtSwagger()

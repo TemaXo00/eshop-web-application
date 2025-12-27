@@ -31,6 +31,11 @@ export class CategoryService {
         orderBy: {
           id: 'asc',
         },
+        select: {
+          id: true,
+          name: true,
+          image_url: true,
+        }
       }),
       this.prisma.category.count({ where }),
     ]);
