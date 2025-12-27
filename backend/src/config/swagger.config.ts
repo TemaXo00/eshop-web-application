@@ -1,26 +1,26 @@
 import { DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 
 export const swaggerConfig = new DocumentBuilder()
-  .setTitle('ESHop API')
-  .setVersion('1.0.0')
-  .addBearerAuth(
-    {
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
-      name: 'JWT',
-      description: 'Enter JWT token',
-      in: 'header',
-    },
-    'JWT-auth',
-  )
-  .setDescription('ESHop API for MITSO Laboratories')
-  .setContact(
-    'TemaXo00',
-    'https://github.com/TemaXo00/',
-    'melnikov.artem294@gmail.com',
-  )
-  .build();
+    .setTitle('ESHop API')
+    .setVersion('1.0.0')
+    .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'JWT',
+          description: 'Enter JWT token',
+          in: 'header',
+        },
+        'JWT-auth',
+    )
+    .setDescription('ESHop API for MITSO Laboratories')
+    .setContact(
+        'TemaXo00',
+        'https://github.com/TemaXo00/',
+        'melnikov.artem294@gmail.com',
+    )
+    .build();
 
 export const swaggerUIconfig: SwaggerCustomOptions = {
   swaggerOptions: {
@@ -29,8 +29,8 @@ export const swaggerUIconfig: SwaggerCustomOptions = {
     filter: true,
     displayRequestDuration: true,
     operationsSorter: (
-      a: { get: (arg0: string) => string },
-      b: { get: (arg0: string) => string },
+        a: { get: (arg0: string) => string },
+        b: { get: (arg0: string) => string },
     ) => {
       const methodOrder = {
         get: 1,
@@ -48,9 +48,25 @@ export const swaggerUIconfig: SwaggerCustomOptions = {
       return methodOrder[methodA] - methodOrder[methodB];
     },
     tagsSorter: 'alpha',
+    tryItOutEnabled: true,
+    requestSnippetsEnabled: true,
+    syntaxHighlight: {
+      activated: true,
+      theme: 'monokai'
+    },
+    displayOperationId: true,
+    defaultModelsExpandDepth: 2,
+    defaultModelExpandDepth: 2,
+    showExtensions: true,
+    showCommonExtensions: true,
+    deepLinking: true,
+    validatorUrl: null,
+    supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
   },
   customSiteTitle: 'ESHop API Documentation',
-  customCss: '.swagger-ui .topbar {display: none !important;}',
+  customCss: `
+    .swagger-ui .topbar {display: none !important;}
+    `,
 
   jsonDocumentUrl: 'docs/swagger.json',
   yamlDocumentUrl: 'docs/swagger.yaml',
