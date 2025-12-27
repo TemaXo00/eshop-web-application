@@ -1,4 +1,14 @@
-import {Controller, Get, Param, ParseIntPipe, Query, Delete, Res, Put, Body} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+  Delete,
+  Res,
+  Put,
+  Body,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import {
   ApiTags,
@@ -7,19 +17,23 @@ import {
   ApiOkResponse,
   ApiBadRequestResponse,
   ApiNotFoundResponse,
-  ApiUnauthorizedResponse, ApiConflictResponse,
+  ApiUnauthorizedResponse,
+  ApiConflictResponse,
 } from '@nestjs/swagger';
-import { PaginatedResponseDto, PaginationDto } from '../common/dto/pagination.dto';
+import {
+  PaginatedResponseDto,
+  PaginationDto,
+} from '../common/dto/pagination.dto';
 import { Roles } from '../../prisma/generated/prisma/enums';
-import { ProfileDto } from "./dto/profile.dto";
-import { JwtSwagger } from "../common/decorators/jwt-swagger.decorator";
-import { Authorization } from "../common/decorators/authorization.decorator";
-import { Authorized } from "../common/decorators/authorized.decorator";
+import { ProfileDto } from './dto/profile.dto';
+import { JwtSwagger } from '../common/decorators/jwt-swagger.decorator';
+import { Authorization } from '../common/decorators/authorization.decorator';
+import { Authorized } from '../common/decorators/authorized.decorator';
 import type { User as PrismaUser } from '../../prisma/generated/prisma/client';
 import type { Response } from 'express';
-import { AllUsersDto } from "./dto/all-users.dto";
-import { UserByIdDto } from "./dto/user-by-id.dto";
-import {UpdateUserDto} from "./dto/update-user.dto";
+import { AllUsersDto } from './dto/all-users.dto';
+import { UserByIdDto } from './dto/user-by-id.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -41,13 +55,16 @@ export class UserController {
     required: false,
     description: 'Filter by role',
   })
-  @ApiOkResponse({ description: 'Returns paginated users', type: PaginatedResponseDto<AllUsersDto> })
+  @ApiOkResponse({
+    description: 'Returns paginated users',
+    type: PaginatedResponseDto<AllUsersDto>,
+  })
   @ApiBadRequestResponse({ description: 'Invalid pagination parameters' })
   @Get('')
   async getAllUsers(
-      @Query() dto: PaginationDto,
-      @Query('search') search?: string,
-      @Query('role') role?: Roles,
+    @Query() dto: PaginationDto,
+    @Query('search') search?: string,
+    @Query('role') role?: Roles,
   ) {
     return await this.userService.getAllUsers(dto, search, role);
   }
@@ -78,8 +95,14 @@ export class UserController {
     return user;
   }
 
-  @ApiOperation({ summary: 'Update user data', description: 'Update all user data' })
-  @ApiOkResponse({ description: 'Update user data successfully', type: UpdateUserDto })
+  @ApiOperation({
+    summary: 'Update user data',
+    description: 'Update all user data',
+  })
+  @ApiOkResponse({
+    description: 'Update user data successfully',
+    type: UpdateUserDto,
+  })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad data' })
   @ApiConflictResponse({ description: 'Conflict of data' })
@@ -87,7 +110,7 @@ export class UserController {
   @Authorization()
   @Put('me')
   async update(@Authorized() user: PrismaUser, @Body() dto: UpdateUserDto) {
-    return await this.userService.updateUser(user.id, dto)
+    return await this.userService.updateUser(user.id, dto);
   }
 
   @ApiOperation({
@@ -111,8 +134,8 @@ export class UserController {
   @Authorization()
   @Delete('me')
   async deleteAccount(
-      @Authorized() user: PrismaUser,
-      @Res({ passthrough: true }) res: Response,
+    @Authorized() user: PrismaUser,
+    @Res({ passthrough: true }) res: Response,
   ) {
     return await this.userService.deleteUser(user.id, res);
   }

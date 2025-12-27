@@ -1,7 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
 import { Roles } from '../../prisma/generated/prisma/enums';
@@ -9,8 +6,8 @@ import { Roles } from '../../prisma/generated/prisma/enums';
 @Injectable()
 export class AdminService {
   constructor(
-      private readonly prisma: PrismaService,
-      private readonly userService: UserService,
+    private readonly prisma: PrismaService,
+    private readonly userService: UserService,
   ) {}
 
   async banUser(id: number) {

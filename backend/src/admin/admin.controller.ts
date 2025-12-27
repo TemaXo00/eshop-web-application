@@ -4,7 +4,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Query,
+  Query, UseGuards,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import {
@@ -15,17 +15,18 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
-  ApiTags,
+  ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import * as client from '../../prisma/generated/prisma/client';
 import { Authorized } from '../common/decorators/authorized.decorator';
-import { AdminOnly } from '../common/decorators/admin-only.decorator';
 import { JwtSwagger } from '../common/decorators/jwt-swagger.decorator';
-import { Roles } from '../../prisma/generated/prisma/enums';
 import { StatisticsResponseDto } from './dto/statistics-response.dto';
+import {RolesGuard} from "../common/guards/roles.guard";
+import {Authorization} from "../common/decorators/authorization.decorator";
+import {Roles as UserRoles} from "../../prisma/generated/prisma/client";
+import {Roles} from "../common/decorators/roles.decorator";
 
 @ApiTags('Admin panel')
-@AdminOnly()
 @JwtSwagger()
 @Controller('admin')
 export class AdminController {
@@ -39,6 +40,12 @@ export class AdminController {
     description: 'Successfully retrieved statistics',
     type: StatisticsResponseDto,
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+  })
+  @UseGuards(RolesGuard)
+  @Authorization()
+  @Roles(UserRoles.ADMIN)
   @Get('statistics')
   async getStats(@Authorized() user: client.User) {
     return await this.adminService.generalStatistics();
@@ -67,6 +74,12 @@ export class AdminController {
   @ApiConflictResponse({
     description: 'User is admin/already banned',
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+  })
+  @UseGuards(RolesGuard)
+  @Authorization()
+  @Roles(UserRoles.ADMIN)
   @Patch('ban/:id')
   async banUser(@Param('id', ParseIntPipe) id: number) {
     return await this.adminService.banUser(id);
@@ -95,6 +108,12 @@ export class AdminController {
   @ApiConflictResponse({
     description: 'User is already active',
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+  })
+  @UseGuards(RolesGuard)
+  @Authorization()
+  @Roles(UserRoles.ADMIN)
   @Patch('restore/:id')
   async restoreUser(@Param('id', ParseIntPipe) id: number) {
     return await this.adminService.restoreUser(id);
@@ -128,15 +147,21 @@ export class AdminController {
   @ApiConflictResponse({
     description: 'User have this role/banned/admin',
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+  })
   @ApiQuery({
     name: 'role',
-    enum: Roles,
+    enum: UserRoles,
     required: true,
   })
+  @UseGuards(RolesGuard)
+  @Authorization()
+  @Roles(UserRoles.ADMIN)
   @Patch('roles/:id')
   async changeRole(
-      @Param('id', ParseIntPipe) id: number,
-      @Query('role') role: Roles,
+    @Param('id', ParseIntPipe) id: number,
+    @Query('role') role: UserRoles,
   ) {
     return this.adminService.changeRole(id, role);
   }

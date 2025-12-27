@@ -1,11 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
 import {
-  ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Roles, Status, PaymentMethods, PaymentStatus } from '../../prisma/generated/prisma/enums';
+import {
+  Roles,
+  Status,
+  PaymentMethods,
+  PaymentStatus,
+} from '../../prisma/generated/prisma/enums';
 
 @ApiTags('Enums')
 @Controller('enums')

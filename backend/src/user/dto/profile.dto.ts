@@ -50,13 +50,13 @@ export class ProfileDto {
     description: 'User store (only for employee)',
     example: 'NULL',
   })
-  store: object
+  store: object;
 
   @ApiProperty({
     description: 'User reviews',
     example: '[]',
   })
-  reviews: object[]
+  reviews: object[];
 
   @ApiProperty({
     description: 'User phone number',
@@ -71,7 +71,7 @@ export class ProfileDto {
   email: string;
   @ApiProperty({
     description: 'User create date',
-    example: '2025-12-26T1818:48:00.188Z'
+    example: '2025-12-26T1818:48:00.188Z',
   })
   createdAt: Date;
 }

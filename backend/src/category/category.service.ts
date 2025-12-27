@@ -47,40 +47,6 @@ export class CategoryService {
     };
   }
 
-  async searchCategories(query: string, limit: number = 10) {
-    if (!query || query.trim().length < 2) {
-      throw new BadRequestException(
-        'Search query must be at least 2 characters',
-      );
-    }
-
-    const categories = await this.prisma.category.findMany({
-      where: {
-        OR: [
-          { name: { contains: query, mode: 'insensitive' as const } },
-          { description: { contains: query, mode: 'insensitive' as const } },
-        ],
-      },
-      take: limit,
-      orderBy: [{ id: 'asc' }, { name: 'asc' }],
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        image_url: true,
-        _count: {
-          select: { products: true },
-        },
-      },
-    });
-
-    return {
-      query,
-      results: categories,
-      total: categories.length,
-    };
-  }
-
   async findById(id: number) {
     const category = await this.prisma.category.findUnique({
       where: { id },

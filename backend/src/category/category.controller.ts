@@ -7,7 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query,
+  Query, UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -31,7 +31,10 @@ import * as client from '../../prisma/generated/prisma/client';
 import { JwtSwagger } from '../common/decorators/jwt-swagger.decorator';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryResponseDto } from './dto/category-response.dto';
-import { AdminOnly } from '../common/decorators/admin-only.decorator';
+import {RolesGuard} from "../common/guards/roles.guard";
+import {Authorization} from "../common/decorators/authorization.decorator";
+import {Roles} from "../common/decorators/roles.decorator";
+import {Roles as UserRoles} from "../../prisma/generated/prisma/client";
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -60,39 +63,6 @@ export class CategoryController {
     return await this.categoryService.findAllPaginated(paginationDto, search);
   }
 
-  @ApiOperation({ summary: 'Search categories by query' })
-  @ApiQuery({
-    name: 'q',
-    required: true,
-    type: String,
-    description: 'Search query (min 2 chars)',
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    description: 'Limit results (default: 10)',
-  })
-  @ApiOkResponse({
-    description: 'Returns search results',
-    schema: {
-      type: 'object',
-      properties: {
-        query: { type: 'string' },
-        results: { type: 'array' },
-        total: { type: 'number' },
-      },
-    },
-  })
-  @ApiBadRequestResponse({ description: 'Query too short' })
-  @Get('search')
-  async search(
-    @Query('q') query: string,
-    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
-  ) {
-    return await this.categoryService.searchCategories(query, limit);
-  }
-
   @ApiOperation({ summary: 'Get category by id' })
   @ApiOkResponse({
     description: 'Returns category by id',
@@ -116,7 +86,9 @@ export class CategoryController {
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
   @ApiConflictResponse({ description: 'Category already exists' })
   @JwtSwagger()
-  @AdminOnly()
+  @UseGuards(RolesGuard)
+  @Authorization()
+  @Roles(UserRoles.ADMIN)
   @Post()
   async create(
     @Authorized() user: client.User,
@@ -132,7 +104,9 @@ export class CategoryController {
   @ApiUnauthorizedResponse({ description: 'User unauthorized' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
   @JwtSwagger()
-  @AdminOnly()
+  @UseGuards(RolesGuard)
+  @Authorization()
+  @Roles(UserRoles.ADMIN)
   @Put(':id')
   async update(
     @Authorized() user: client.User,
@@ -148,7 +122,9 @@ export class CategoryController {
   @ApiUnauthorizedResponse({ description: 'User unauthorized' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
   @JwtSwagger()
-  @AdminOnly()
+  @UseGuards(RolesGuard)
+  @Authorization()
+  @Roles(UserRoles.ADMIN)
   @Delete(':id')
   async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.categoryService.delete(id);

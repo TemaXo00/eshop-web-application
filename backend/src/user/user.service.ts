@@ -1,10 +1,14 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { Roles, Status } from '../../prisma/generated/prisma/enums';
-import { AuthService } from "../auth/auth.service";
+import { AuthService } from '../auth/auth.service';
 import type { Response } from 'express';
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { UpdateUserDto } from './dto/update-user.dto';
 import { hashPassword } from '../common/utils/password.utils';
 
 @Injectable()
@@ -62,7 +66,7 @@ export class UserService {
 
   async getUserById(id: number) {
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: { id, status: {not: Status.DELETED} },
       select: {
         id: true,
         first_name: true,

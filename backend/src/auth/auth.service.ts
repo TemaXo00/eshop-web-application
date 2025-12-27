@@ -105,10 +105,10 @@ export class AuthService {
     if (user.status === 'DELETED') {
       await this.prisma.user.update({
         data: {
-          status: 'ACTIVE'
+          status: 'ACTIVE',
         },
         where: { email: dto.email },
-      })
+      });
     }
 
     return this.auth(res, user.id, user.role);
@@ -174,11 +174,11 @@ export class AuthService {
         store: true,
         reviews: {
           take: 10,
-          orderBy: { created_at: 'desc' }
+          orderBy: { created_at: 'desc' },
         },
         phone: true,
         email: true,
-        created_at: true
+        created_at: true,
       },
     });
 
