@@ -57,7 +57,7 @@ export class CreateSupplierDto {
   @IsOptional()
   @Transform(({ value }) => (value !== undefined ? Number(value) : 0.0))
   @Min(0)
-  @Max(5)
+  @Max(10)
   rating?: number = 0.0;
 
   @ApiProperty({

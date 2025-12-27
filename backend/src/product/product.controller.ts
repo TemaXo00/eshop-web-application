@@ -77,6 +77,7 @@ export class ProductController {
   })
   @ApiBadRequestResponse({ description: 'Invalid fields' })
   @ApiUnauthorizedResponse({ description: 'User unauthorized' })
+  @ApiNotFoundResponse({ description: 'Categories not found' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
   @ApiConflictResponse({ description: 'Product already exists' })
   @JwtSwagger()
@@ -118,7 +119,7 @@ export class ProductController {
 
   @ApiOperation({ summary: 'Delete product by ID' })
   @ApiOkResponse({ description: 'Deleted successfully' })
-  @ApiNotFoundResponse({ description: 'Product with id not found' })
+  @ApiNotFoundResponse({ description: 'Product with id not found/Category not found' })
   @ApiUnauthorizedResponse({ description: 'User unauthorized' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
   @JwtSwagger()

@@ -81,7 +81,7 @@ export class CreateReviewDto {
   })
   @IsNumber()
   @Min(0)
-  @Max(5)
+  @Max(10)
   @Transform(({ value }) => Number(value))
   rating: number;
 }

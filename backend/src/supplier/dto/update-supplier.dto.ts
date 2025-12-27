@@ -58,7 +58,7 @@ export class UpdateSupplierDto {
   @IsOptional()
   @Transform(({ value }) => Number(value))
   @Min(0)
-  @Max(5)
+  @Max(10)
   rating?: number;
 
   @ApiProperty({

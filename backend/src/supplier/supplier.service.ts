@@ -94,6 +94,7 @@ export class SupplierService {
       phone: dto.phone,
       email: dto.email,
       rating: dto.rating || 0.0,
+      manager_id: user.role === 'SUPPLIERMANAGER' ? user.id : null,
       logo_url: dto.logo_url,
     };
 

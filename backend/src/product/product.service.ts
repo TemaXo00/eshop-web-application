@@ -5,23 +5,27 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CategoryService } from '../category/category.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+      private readonly prisma: PrismaService,
+      private readonly categoryService: CategoryService,
+  ) {}
 
   async getAllProducts(dto: PaginationDto, search?: string) {
     const where = search
-      ? {
+        ? {
           OR: [
             { name: { contains: search, mode: 'insensitive' as const } },
             { description: { contains: search, mode: 'insensitive' as const } },
           ],
         }
-      : {};
+        : {};
 
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
@@ -78,6 +82,15 @@ export class ProductService {
       throw new ConflictException('Product with name already exists');
     }
 
+    if (dto.categoryIds && dto.categoryIds.length > 0) {
+      for (const categoryId of dto.categoryIds) {
+        const categoryExists = await this.categoryService.exists(categoryId);
+        if (!categoryExists) {
+          throw new NotFoundException(`Category with id ${categoryId} not found`);
+        }
+      }
+    }
+
     const data: any = {
       name: dto.name,
       description: dto.description,
@@ -117,6 +130,15 @@ export class ProductService {
       }
     }
 
+    if (dto.categoryIds && dto.categoryIds.length > 0) {
+      for (const categoryId of dto.categoryIds) {
+        const categoryExists = await this.categoryService.exists(categoryId);
+        if (!categoryExists) {
+          throw new NotFoundException(`Category with id ${categoryId} not found`);
+        }
+      }
+    }
+
     const updateData: any = {
       name: dto.name,
       description: dto.description,
@@ -131,7 +153,7 @@ export class ProductService {
     }
 
     const filteredData = Object.fromEntries(
-      Object.entries(updateData).filter(([_, value]) => value !== undefined),
+        Object.entries(updateData).filter(([_, value]) => value !== undefined),
     );
 
     if (Object.keys(filteredData).length === 0) {

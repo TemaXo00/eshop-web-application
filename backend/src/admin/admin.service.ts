@@ -67,8 +67,12 @@ export class AdminService {
       throw new ConflictException(`User already has role: ${role}`);
     }
 
+    if (user.role === 'ADMIN') {
+      throw new ConflictException(`You cannot change role for admin`);
+    }
+
     if (role === 'ADMIN') {
-      throw new ConflictException(`You cannot promote user to admin`);
+      throw new ConflictException(`You cannot promote to admin`);
     }
 
     const updateData: any = { role };

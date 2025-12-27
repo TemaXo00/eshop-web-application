@@ -68,6 +68,14 @@ export class CategoryService {
     return category;
   }
 
+  async exists(id: number): Promise<boolean> {
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    return !!category;
+  }
+
   async create(dto: CreateCategoryDto) {
     const existing = await this.prisma.category.findUnique({
       where: { name: dto.name },
