@@ -35,7 +35,7 @@ export class CategoryService {
           id: true,
           name: true,
           image_url: true,
-        }
+        },
       }),
       this.prisma.category.count({ where }),
     ]);

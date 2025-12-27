@@ -35,7 +35,7 @@ export class StoreService {
           store_image: true,
           opening_time: true,
           closing_time: true,
-        }
+        },
       }),
       this.prisma.store.count({ where }),
     ]);

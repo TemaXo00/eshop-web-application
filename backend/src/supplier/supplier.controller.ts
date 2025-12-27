@@ -84,7 +84,10 @@ export class SupplierController {
   @Authorization()
   @Roles(UserRoles.ADMIN, UserRoles.SUPPLIERMANAGER)
   @Post()
-  async create(@Authorized() user: client.User, @Body() data: CreateSupplierDto) {
+  async create(
+    @Authorized() user: client.User,
+    @Body() data: CreateSupplierDto,
+  ) {
     return await this.supplierService.createSupplier(data, user.id);
   }
 
@@ -106,9 +109,9 @@ export class SupplierController {
   @Roles(UserRoles.ADMIN, UserRoles.SUPPLIERMANAGER)
   @Put(':id')
   async update(
-      @Authorized() user: client.User,
-      @Param('id', ParseIntPipe) id: number,
-      @Body() dto: UpdateSupplierDto,
+    @Authorized() user: client.User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateSupplierDto,
   ) {
     return await this.supplierService.updateSupplier(id, dto, user.id);
   }
@@ -124,8 +127,8 @@ export class SupplierController {
   @Roles(UserRoles.ADMIN)
   @Delete(':id')
   async delete(
-      @Authorized() user: client.User,
-      @Param('id', ParseIntPipe) id: number,
+    @Authorized() user: client.User,
+    @Param('id', ParseIntPipe) id: number,
   ) {
     return await this.supplierService.removeSupplier(id);
   }

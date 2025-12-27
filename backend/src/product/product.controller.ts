@@ -84,7 +84,10 @@ export class ProductController {
   @Authorization()
   @Roles(UserRoles.ADMIN)
   @Post()
-  async create(@Authorized() user: client.User, @Body() data: CreateProductDto) {
+  async create(
+    @Authorized() user: client.User,
+    @Body() data: CreateProductDto,
+  ) {
     return await this.productService.createProduct(data);
   }
 
@@ -106,9 +109,9 @@ export class ProductController {
   @Roles(UserRoles.ADMIN)
   @Put(':id')
   async update(
-      @Authorized() user: client.User,
-      @Param('id', ParseIntPipe) id: number,
-      @Body() dto: UpdateProductDto,
+    @Authorized() user: client.User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateProductDto,
   ) {
     return await this.productService.updateProduct(id, dto);
   }
@@ -124,8 +127,8 @@ export class ProductController {
   @Roles(UserRoles.ADMIN)
   @Delete(':id')
   async delete(
-      @Authorized() user: client.User,
-      @Param('id', ParseIntPipe) id: number,
+    @Authorized() user: client.User,
+    @Param('id', ParseIntPipe) id: number,
   ) {
     return await this.productService.removeProduct(id);
   }

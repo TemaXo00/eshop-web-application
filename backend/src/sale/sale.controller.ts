@@ -77,26 +77,21 @@ export class SaleController {
   @Roles(UserRoles.ADMIN, UserRoles.EMPLOYEE)
   @Get()
   async getAll(
-      @Authorized() user: client.User,
-      @Query() dto: PaginationDto,
-      @Query('storeId') storeId?: string,
-      @Query('clientId') clientId?: string,
-      @Query('sellerId') sellerId?: string,
-      @Query('startDate') startDate?: string,
-      @Query('endDate') endDate?: string,
+    @Authorized() user: client.User,
+    @Query() dto: PaginationDto,
+    @Query('storeId') storeId?: string,
+    @Query('clientId') clientId?: string,
+    @Query('sellerId') sellerId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ) {
-    return await this.saleService.getAllSales(
-        dto,
-        user.id,
-        user.role,
-        {
-          storeId: storeId ? parseInt(storeId) : undefined,
-          clientId: clientId ? parseInt(clientId) : undefined,
-          sellerId: sellerId ? parseInt(sellerId) : undefined,
-          startDate,
-          endDate,
-        }
-    );
+    return await this.saleService.getAllSales(dto, user.id, user.role, {
+      storeId: storeId ? parseInt(storeId) : undefined,
+      clientId: clientId ? parseInt(clientId) : undefined,
+      sellerId: sellerId ? parseInt(sellerId) : undefined,
+      startDate,
+      endDate,
+    });
   }
 
   @ApiOperation({ summary: 'Get sale by id' })
@@ -111,8 +106,8 @@ export class SaleController {
   @Roles(UserRoles.ADMIN, UserRoles.EMPLOYEE)
   @Get(':id')
   async getOne(
-      @Authorized() user: client.User,
-      @Param('id', ParseIntPipe) id: number,
+    @Authorized() user: client.User,
+    @Param('id', ParseIntPipe) id: number,
   ) {
     return await this.saleService.getSaleById(id, user.id, user.role);
   }
@@ -130,10 +125,7 @@ export class SaleController {
   @Authorization()
   @Roles(UserRoles.EMPLOYEE)
   @Post()
-  async create(
-      @Authorized() user: client.User,
-      @Body() data: CreateSaleDto,
-  ) {
+  async create(@Authorized() user: client.User, @Body() data: CreateSaleDto) {
     return await this.saleService.createSale(data, user.id);
   }
 
@@ -152,9 +144,9 @@ export class SaleController {
   @Roles(UserRoles.ADMIN, UserRoles.EMPLOYEE)
   @Put(':id')
   async update(
-      @Authorized() user: client.User,
-      @Param('id', ParseIntPipe) id: number,
-      @Body() dto: UpdateSaleDto,
+    @Authorized() user: client.User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateSaleDto,
   ) {
     return await this.saleService.updateSale(id, dto, user.id, user.role);
   }
