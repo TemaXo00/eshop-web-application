@@ -25,10 +25,9 @@ model User {
   status Status @default(ACTIVE)
 
   store_id    Int?
-  store       Store?         @relation(fields: [store_id], references: [id])
-  position    StorePosition?
-  supplier_id Int?           @unique
-  supplier    Supplier?      @relation(fields: [supplier_id], references: [id])
+  store       Store?    @relation(fields: [store_id], references: [id])
+  supplier_id Int?      @unique
+  supplier    Supplier? @relation(fields: [supplier_id], references: [id])
 
   purchases Sale[]   @relation("ClientSales")
   sales     Sale[]   @relation("SellerSales")
@@ -225,14 +224,7 @@ enum Roles {
 enum Status {
   ACTIVE
   BANNED
-}
-
-enum StorePosition {
-  SELLER
-  MANAGER
-  ADMINISTRATOR
-  DIRECTOR
-  CONSULTANT
+  DELETED
 }
 
 enum PaymentMethods {

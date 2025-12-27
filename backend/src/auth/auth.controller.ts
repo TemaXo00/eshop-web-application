@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   Post,
   Req,
@@ -23,10 +22,6 @@ import {
 import { LoginDto } from './dto/login.dto';
 import type { Request, Response } from 'express';
 import { AuthDto } from './dto/auth.dto';
-import { Authorization } from '../common/decorators/authorization.decorator';
-import { Authorized } from '../common/decorators/authorized.decorator';
-import * as client from '../../prisma/generated/prisma/client';
-import { UserDto } from './dto/user.dto';
 import { JwtSwagger } from '../common/decorators/jwt-swagger.decorator';
 
 @ApiTags('Authorization')
@@ -116,24 +111,5 @@ export class AuthController {
   @HttpCode(204)
   async logout(@Res({ passthrough: true }) res: Response) {
     return await this.authService.logout(res);
-  }
-
-  @ApiOperation({
-    summary: 'Get current user',
-    description: 'Returns profile information of the authenticated user',
-  })
-  @ApiOkResponse({
-    description: 'Show user',
-    type: UserDto,
-  })
-  @ApiUnauthorizedResponse({
-    description: 'Unauthorized',
-  })
-  @JwtSwagger()
-  @Authorization()
-  @Get('profile')
-  @HttpCode(200)
-  async user(@Authorized() user: client.User) {
-    return user;
   }
 }

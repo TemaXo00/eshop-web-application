@@ -2,9 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import {
-  Roles,
-  StorePosition,
-  Status,
+  Roles
 } from '../../prisma/generated/prisma/enums';
 
 @Injectable()
@@ -35,6 +33,7 @@ export class UserService {
         select: {
           id: true,
           first_name: true,
+          last_name: true,
           username: true,
           avatar_url: true,
           role: true,
@@ -74,7 +73,6 @@ export class UserService {
             address: true,
           },
         },
-        position: true,
         reviews: {
           take: 5,
           orderBy: { created_at: 'desc' },
@@ -100,13 +98,5 @@ export class UserService {
     }
 
     return user;
-  }
-
-  async getAvailableEnums() {
-    return {
-      roles: Object.values(Roles),
-      storePositions: Object.values(StorePosition),
-      statuses: Object.values(Status),
-    };
   }
 }

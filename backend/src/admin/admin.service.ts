@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
-import { Roles, StorePosition } from '../../prisma/generated/prisma/enums';
+import { Roles } from '../../prisma/generated/prisma/enums';
 
 @Injectable()
 export class AdminService {
@@ -65,7 +65,6 @@ export class AdminService {
     role: Roles,
     supplierId?: number,
     storeId?: number,
-    position?: StorePosition,
   ) {
     const user = await this.userService.getUserById(id);
 
@@ -106,10 +105,6 @@ export class AdminService {
         throw new ConflictException('Store ID is required for EMPLOYEE role');
       }
 
-      if (!position) {
-        throw new ConflictException('Position is required for EMPLOYEE role');
-      }
-
       const store = await this.prisma.store.findUnique({
         where: { id: storeId },
       });
@@ -118,12 +113,7 @@ export class AdminService {
         throw new NotFoundException(`Store with id ${storeId} not found`);
       }
 
-      if (!Object.values(StorePosition).includes(position)) {
-        throw new NotFoundException(`Invalid position: ${position}`);
-      }
-
       updateData.store_id = storeId;
-      updateData.position = position;
       updateData.supplier_id = null;
     } else {
       updateData.supplier_id = null;
@@ -141,7 +131,6 @@ export class AdminService {
       role: updatedUser.role,
       supplier_id: updatedUser.supplier_id,
       store_id: updatedUser.store_id,
-      position: updatedUser.position,
       message: `User role successfully changed to ${role}`,
     };
   }

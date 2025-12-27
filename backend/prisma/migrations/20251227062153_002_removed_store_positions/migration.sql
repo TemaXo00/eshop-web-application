@@ -1,0 +1,11 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `position` on the `users` table. All the data in the column will be lost.
+
+*/
+-- AlterTable
+ALTER TABLE "users" DROP COLUMN "position";
+
+-- DropEnum
+DROP TYPE "StorePosition";

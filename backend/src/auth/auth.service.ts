@@ -154,10 +154,17 @@ export class AuthService {
         first_name: true,
         last_name: true,
         username: true,
-        role: true,
+        avatar_url: true,
         status: true,
+        role: true,
+        store: true,
+        reviews: {
+          take: 10,
+          orderBy: { created_at: 'desc' }
+        },
         phone: true,
         email: true,
+        created_at: true
       },
     });
 

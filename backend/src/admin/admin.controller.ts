@@ -21,8 +21,7 @@ import * as client from '../../prisma/generated/prisma/client';
 import { Authorized } from '../common/decorators/authorized.decorator';
 import { AdminOnly } from '../common/decorators/admin-only.decorator';
 import { JwtSwagger } from '../common/decorators/jwt-swagger.decorator';
-import { Roles, StorePosition } from '../../prisma/generated/prisma/enums';
-import { OptionalPipe } from '../common/pipes/optional.pipe';
+import { Roles } from '../../prisma/generated/prisma/enums';
 import { StatisticsResponseDto } from './dto/statistics-response.dto';
 
 @ApiTags('Admin panel')
@@ -139,7 +138,6 @@ export class AdminController {
   })
   @ApiQuery({
     name: 'position',
-    enum: StorePosition,
     required: false,
   })
   @ApiQuery({
@@ -158,7 +156,6 @@ export class AdminController {
   async changeRole(
     @Param('id', ParseIntPipe) id: number,
     @Query('role') role: Roles,
-    @Query('position', new OptionalPipe()) position?: StorePosition,
     @Query('storeId', new ParseIntPipe({ optional: true })) storeId?: number,
     @Query('supplierId', new ParseIntPipe({ optional: true }))
     supplierId?: number,
@@ -168,7 +165,6 @@ export class AdminController {
       role,
       supplierId,
       storeId,
-      position,
     );
   }
 }
