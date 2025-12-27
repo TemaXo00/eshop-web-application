@@ -28,6 +28,23 @@ export const swaggerUIconfig: SwaggerCustomOptions = {
         docExpansion: 'list',
         filter: true,
         displayRequestDuration: true,
+        operationsSorter: (a: { get: (arg0: string) => string; }, b: { get: (arg0: string) => string; }) => {
+            const methodOrder = {
+                'get': 1,
+                'post': 2,
+                'put': 3,
+                'patch': 4,
+                'delete': 5,
+                'head': 6,
+                'options': 7,
+                'trace': 8
+            };
+            const methodA = a.get('method').toLowerCase();
+            const methodB = b.get('method').toLowerCase();
+
+            return methodOrder[methodA] - methodOrder[methodB];
+        },
+        tagsSorter: 'alpha'
     },
     customSiteTitle: 'ESHop API Documentation',
     customCss: '.swagger-ui .topbar {display: none !important;}',

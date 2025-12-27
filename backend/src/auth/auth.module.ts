@@ -19,5 +19,6 @@ import { DateUtil } from '../common/utils/parse-data.util';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, DateUtil],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

@@ -102,6 +102,15 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
+    if (user.status === 'DELETED') {
+      await this.prisma.user.update({
+        data: {
+          status: 'ACTIVE'
+        },
+        where: { email: dto.email },
+      })
+    }
+
     return this.auth(res, user.id, user.role);
   }
 
@@ -128,6 +137,11 @@ export class AuthService {
       if (user.status === 'BANNED') {
         this.setCookies(res, '', new Date(0));
         throw new UnauthorizedException('User banned');
+      }
+
+      if (user.status === 'DELETED') {
+        this.setCookies(res, '', new Date(0));
+        throw new UnauthorizedException('User deleted');
       }
 
       return this.auth(res, user.id, user.role);
@@ -174,6 +188,10 @@ export class AuthService {
 
     if (user.status === 'BANNED') {
       throw new UnauthorizedException('User banned');
+    }
+
+    if (user.status === 'DELETED') {
+      throw new UnauthorizedException('User deleted');
     }
 
     return user;

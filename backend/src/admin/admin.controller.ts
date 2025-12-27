@@ -102,8 +102,7 @@ export class AdminController {
 
   @ApiOperation({
     summary: 'Update user role',
-    description:
-      'Change user role. For EMPLOYEE role need position. For SUPPLIERMANAGER role need supplierId.',
+    description: 'Change user role',
   })
   @ApiParam({
     name: 'id',
@@ -116,8 +115,6 @@ export class AdminController {
       example: {
         id: 1,
         role: 'EMPLOYEE',
-        store_id: 5,
-        position: 'MANAGER',
         message: 'User role successfully changed to EMPLOYEE',
       },
     },
@@ -126,45 +123,21 @@ export class AdminController {
     description: 'Missing required parameters for role',
   })
   @ApiNotFoundResponse({
-    description: 'User/Store/Supplier not found',
+    description: 'User not found',
   })
   @ApiConflictResponse({
-    description: 'User have this role/banned/admin/',
+    description: 'User have this role/banned/admin',
   })
   @ApiQuery({
     name: 'role',
     enum: Roles,
     required: true,
   })
-  @ApiQuery({
-    name: 'position',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'storeId',
-    type: Number,
-    required: false,
-    description: 'Required for EMPLOYEE role',
-  })
-  @ApiQuery({
-    name: 'supplierId',
-    type: Number,
-    required: false,
-    description: 'Required for SUPPLIERMANAGER role',
-  })
   @Patch('roles/:id')
   async changeRole(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('role') role: Roles,
-    @Query('storeId', new ParseIntPipe({ optional: true })) storeId?: number,
-    @Query('supplierId', new ParseIntPipe({ optional: true }))
-    supplierId?: number,
+      @Param('id', ParseIntPipe) id: number,
+      @Query('role') role: Roles,
   ) {
-    return this.adminService.changeRole(
-      id,
-      role,
-      supplierId,
-      storeId,
-    );
+    return this.adminService.changeRole(id, role);
   }
 }

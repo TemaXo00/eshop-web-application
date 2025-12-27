@@ -67,7 +67,7 @@ export class AuthController {
     description: 'Login data is not correct',
   })
   @ApiUnauthorizedResponse({
-    description: 'User banned',
+    description: 'User banned/deleted',
   })
   @Post('login')
   @HttpCode(200)

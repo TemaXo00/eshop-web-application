@@ -1,7 +1,6 @@
 import {
   ConflictException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
@@ -10,8 +9,8 @@ import { Roles } from '../../prisma/generated/prisma/enums';
 @Injectable()
 export class AdminService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly userService: UserService,
+      private readonly prisma: PrismaService,
+      private readonly userService: UserService,
   ) {}
 
   async banUser(id: number) {
@@ -60,12 +59,7 @@ export class AdminService {
     };
   }
 
-  async changeRole(
-    id: number,
-    role: Roles,
-    supplierId?: number,
-    storeId?: number,
-  ) {
+  async changeRole(id: number, role: Roles) {
     const user = await this.userService.getUserById(id);
 
     if (user.status === 'BANNED') {
@@ -82,45 +76,6 @@ export class AdminService {
 
     const updateData: any = { role };
 
-    if (role === 'SUPPLIERMANAGER') {
-      if (!supplierId) {
-        throw new ConflictException(
-          'Supplier ID is required for SUPPLIERMANAGER role',
-        );
-      }
-
-      const supplier = await this.prisma.supplier.findUnique({
-        where: { id: supplierId },
-      });
-
-      if (!supplier) {
-        throw new NotFoundException(`Supplier with id ${supplierId} not found`);
-      }
-
-      updateData.supplier_id = supplierId;
-      updateData.store_id = null;
-      updateData.position = null;
-    } else if (role === 'EMPLOYEE') {
-      if (!storeId) {
-        throw new ConflictException('Store ID is required for EMPLOYEE role');
-      }
-
-      const store = await this.prisma.store.findUnique({
-        where: { id: storeId },
-      });
-
-      if (!store) {
-        throw new NotFoundException(`Store with id ${storeId} not found`);
-      }
-
-      updateData.store_id = storeId;
-      updateData.supplier_id = null;
-    } else {
-      updateData.supplier_id = null;
-      updateData.store_id = null;
-      updateData.position = null;
-    }
-
     const updatedUser = await this.prisma.user.update({
       data: updateData,
       where: { id },
@@ -129,8 +84,6 @@ export class AdminService {
     return {
       id: updatedUser.id,
       role: updatedUser.role,
-      supplier_id: updatedUser.supplier_id,
-      store_id: updatedUser.store_id,
       message: `User role successfully changed to ${role}`,
     };
   }

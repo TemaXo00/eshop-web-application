@@ -62,7 +62,7 @@ export class CategoryService {
         ],
       },
       take: limit,
-      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      orderBy: [{ id: 'asc' }, { name: 'asc' }],
       select: {
         id: true,
         name: true,

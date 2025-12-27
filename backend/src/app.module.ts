@@ -13,6 +13,7 @@ import { SaleModule } from './sale/sale.module';
 import { ReviewModule } from './review/review.module';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
+import { EnumsModule } from './enums/enums.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AdminModule } from './admin/admin.module';
     ReviewModule,
     UserModule,
     AdminModule,
+    EnumsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
