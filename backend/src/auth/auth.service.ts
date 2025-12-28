@@ -226,15 +226,12 @@ export class AuthService {
 
   private setCookies(res: Response, value: string, expires: Date) {
     const options: any = {
+      domain: this.COOKIE_DOMAIN,
       httpOnly: true,
       expires,
       secure: !isDev(this.config),
-      sameSite: isDev(this.config) ? 'none' : 'lax',
+      sameSite: isDev(this.config) ? 'lax' : 'none',
     };
-
-    if (!isDev(this.config)) {
-      options.domain = this.COOKIE_DOMAIN;
-    }
 
     res.cookie('refreshToken', value, options);
   }
