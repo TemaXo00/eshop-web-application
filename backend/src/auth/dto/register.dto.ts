@@ -5,7 +5,7 @@ import {
   IsString,
   IsStrongPassword,
   Length,
-  Matches,
+  Matches, ValidateIf,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -66,6 +66,7 @@ export class RegisterDto {
   })
   @IsOptional()
   @IsString()
+  @ValidateIf(o => o.avatar_url && o.avatar_url.length > 0)
   @Matches(/^(https?:\/\/|\/|data:image\/)/)
   avatar_url?: string;
   @ApiProperty({

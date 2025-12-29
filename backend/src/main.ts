@@ -9,6 +9,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
+import {isDev} from "./common/utils/is-dev.util";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -21,12 +22,22 @@ async function bootstrap() {
     const port = 3000;
     const logger = new Logger('Bootstrap');
 
-    app.use(helmet());
+    app.use(helmet({
+        crossOriginEmbedderPolicy: false,
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                styleSrc: ["'self'", "'unsafe-inline'"],
+                imgSrc: ["'self'", "data:", "validator.swagger.io"],
+                scriptSrc: ["'self'", "https: 'unsafe-inline'"],
+            },
+        },
+    }));
 
     app.use(
         rateLimit({
             windowMs: 15 * 60 * 1000,
-            max: 100,
+            limit: 100,
             message: 'Too many requests from this IP',
         }),
     );
@@ -49,11 +60,15 @@ async function bootstrap() {
 
     app.use(cookieParser());
 
-    const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('docs', app, swaggerDocument, swaggerUIconfig);
+    if (isDev(config)) {
+        const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+        SwaggerModule.setup('docs', app, swaggerDocument, swaggerUIconfig);
+    }
+
+    const allowedOrigins = config.getOrThrow<string>('BACKEND_ALLOWED_ORIGINS').split(',').map(o => o.trim());
 
     app.enableCors({
-        origin: config.getOrThrow<string>('BACKEND_ALLOWED_ORIGINS'),
+        origin: allowedOrigins,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         allowedHeaders: [
@@ -75,6 +90,8 @@ async function bootstrap() {
 
     try {
         await app.listen(port);
+        logger.log(`App mode: ${isDev(config) ? 'DEV': 'PROD'}`);
+        isDev(config) ? logger.log(`Swagger docs: /api/docs`) : logger.log(`To enable Swagger docs, enable app in DEV mode`)
     } catch (error) {
         logger.error('Failed to start application:', error);
         process.exit(1);

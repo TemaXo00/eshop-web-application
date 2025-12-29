@@ -9,7 +9,9 @@ export class AppService {
     return {
       greeting: 'Welcome to EShop API',
       status: 'OK',
-      docs: '/docs',
+      backend: 'Nest JS',
+      frontend: 'Vue JS',
+      author: 'TemaXo00'
     };
   }
 
