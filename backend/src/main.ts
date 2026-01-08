@@ -86,12 +86,10 @@ async function bootstrap() {
         maxAge: 86400,
     });
 
-    app.setGlobalPrefix('api');
-
     try {
         await app.listen(port);
         logger.log(`App mode: ${isDev(config) ? 'DEV': 'PROD'}`);
-        isDev(config) ? logger.log(`Swagger docs: /api/docs`) : logger.log(`To enable Swagger docs, enable app in DEV mode`)
+        isDev(config) ? logger.log(`Swagger docs: /docs`) : logger.log(`To enable Swagger docs, enable app in DEV mode`)
     } catch (error) {
         logger.error('Failed to start application:', error);
         process.exit(1);

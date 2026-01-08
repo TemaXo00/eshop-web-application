@@ -12,5 +12,5 @@ RUN npx prisma generate
 
 COPY ${BACKEND_PATH}/ .
 
-EXPOSE 5173
+EXPOSE 3000
 CMD sh -c "npx prisma migrate deploy && npm run start:dev"

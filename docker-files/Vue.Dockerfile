@@ -9,5 +9,5 @@ RUN npm ci
 
 COPY ${UI_PATH}/ .
 
-EXPOSE 3000
+EXPOSE 5173
 CMD sh -c "npm run dev -- --host"
